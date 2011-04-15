@@ -1,0 +1,11 @@
+# Ignore Eclipse folders
+.classpath
+.project
+.settings
+eclipse
+
+# Ignore IDEA files
+*.iml
+
+# Ignore tmp files
+tmp
