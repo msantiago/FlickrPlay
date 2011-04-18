@@ -1,14 +1,19 @@
 #{extends 'main.html' /}
 #{set title:'Home' /}
 
+#{set 'moreStyles'}
+    <link rel="stylesheet" media="screen" href="@{'/public/lightbox/css/jquery.lightbox-0.5.css'}">
+#{/set}
+
 #{set 'moreScripts'}
     #{script 'jquery.lazyload.mini.js'/}
+    <script src="@{'/public/lightbox/jquery.lightbox-0.5.min.js'}" type="text/javascript" charset="utf-8"></script>
 #{/set}
 
 <div id="items">
     <div id="content">
         <div id="mask"></div>
-		<div id="photo"><img></div>
+		<div id="photo"><a class="lightbox"></a></div>
         <table>
             <thead>
                 <tr>
@@ -19,7 +24,7 @@
             <tbody>
                 #{list photos, as:'photo'}
                    <tr>
-                       <td><a class="photo" href="${photo.src('m')}">${photo.id}</a></td>
+                       <td><a class="photo" href="${photo.src('m')}" lightbox="${photo.src('z')}">${photo.id}</a></td>
                        <td>${photo.title}</td>
                    </tr>
                 #{/list}
@@ -42,8 +47,8 @@
                 	<td colspan="2">
                 		<div id="miniatures">
                 			#{list photos, as:'photo'}
-                				<a class="photo" href="${photo.src('m')}">
-                					<img class="lazy" src="${photo.src('s')}" dd="/public/images/grey.gif">
+                				<a class="photo" href="${photo.src('m')}" lightbox="${photo.src('z')}">
+                					<img class="lazy" original="${photo.src('s')}" src="/public/images/grey.gif">
                 				</a>
                 			#{/list}
                 		</div>
@@ -63,25 +68,28 @@
    	    });
    	}
     
-	function loadImage(src) {
+	function loadImage(src, lightbox) {
         var img = new Image();
         $(img).load(function() {
         	$(this).hide();
-            $('#photo').append($(img));
+            $('#photo > a')
+            	.append($(img))
+            	.attr('href', lightbox)
+            	.lightBox();
            	$(this).fadeIn(500);
         })
         $(img).attr('src', src);
 	}
 
 	lazyLoad();
-    loadImage($('a.photo').first().attr('href'));
-	
+	loadImage($('a.photo').first().attr('href'), $('a.photo').first().attr('lightbox'));
+    
 	$('a.page').live('click', function(e) {
         e.preventDefault()
         var href = $(this).attr('href')
         $('#items').addClass('loading').load(href + ' #content', function() {
             $('#items').removeClass('loading')
-            loadImage($('a.photo').first().attr('href'));
+            loadImage($('a.photo').first().attr('href'), $('a.photo').first().attr('lightbox'));
         	lazyLoad();
         })
     })
@@ -89,11 +97,10 @@
     
     $('a.photo').live('click', function(e) {
         e.preventDefault()
-        $('#photo > img').stop(true, true);
-        $('#photo > img').fadeOut(function() {
+        $('#photo > a > img').stop(true, true);
+        $('#photo > a > img').fadeOut(function() {
         	$(this).remove();
         });
-        var href = $(this).attr('href')
-		loadImage(href);
+		loadImage($(this).attr('href'), $(this).attr('lightbox'));
     })
 </script>

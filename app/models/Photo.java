@@ -19,7 +19,7 @@ public class Photo {
 	}
 	
 	public String src(String size) {
-		return "http://farm1.static.flickr.com/" + serverid + "/" + id + "_" + secret + "_m.jpg";
+		return "http://farm1.static.flickr.com/" + serverid + "/" + id + "_" + secret + "_" + size + ".jpg";
 	}
 	
 	@Override
