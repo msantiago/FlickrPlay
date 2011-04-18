@@ -18,7 +18,7 @@ public class Photo {
 		this.secret = secret;
 	}
 	
-	public String src() {
+	public String src(String size) {
 		return "http://farm1.static.flickr.com/" + serverid + "/" + id + "_" + secret + "_m.jpg";
 	}
 	

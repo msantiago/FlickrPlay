@@ -1,6 +1,10 @@
 #{extends 'main.html' /}
 #{set title:'Home' /}
 
+#{set 'moreScripts'}
+    #{script 'jquery.lazyload.mini.js'/}
+#{/set}
+
 <div id="items">
     <div id="content">
         <div id="mask"></div>
@@ -8,16 +12,16 @@
         <table>
             <thead>
                 <tr>
-                    <th>id</th>
+                    <th width="90px">id</th>
                     <th>Photo title</th>
                 </tr>
             </thead>
             <tbody>
                 #{list photos, as:'photo'}
-                    <tr>
-                        <td><a class="photo" href="${photo.src()}">${photo.id}</a></td>
-                        <td>${photo.title}</td>
-                    </tr>
+                   <tr>
+                       <td><a class="photo" href="${photo.src('m')}">${photo.id}</a></td>
+                       <td>${photo.title}</td>
+                   </tr>
                 #{/list}
             </tbody>
             <tfoot id="pagination">
@@ -34,19 +38,51 @@
 						</span>
                     </td>
                 </tr>
+                <tr>
+                	<td colspan="2">
+                		<div id="miniatures">
+                			#{list photos, as:'photo'}
+                				<a class="photo" href="${photo.src('m')}">
+                					<img class="lazy" src="${photo.src('s')}" dd="/public/images/grey.gif">
+                				</a>
+                			#{/list}
+                		</div>
+                	</td>
+                </tr>
             </tfoot>
         </table>
     </div>    
 </div>
 
 <script type="text/javascript" charset="utf-8">
+	function lazyLoad() {
+   	   	$("img.lazy").lazyload({
+   	        placeholder : "/public/images/grey.gif",
+   	        effect: "fadeIn",
+   	        container: "#miniatures"
+   	    });
+   	}
+    
+	function loadImage(src) {
+        var img = new Image();
+        $(img).load(function() {
+        	$(this).hide();
+            $('#photo').append($(img));
+           	$(this).fadeIn(500);
+        })
+        $(img).attr('src', src);
+	}
 
+	lazyLoad();
+    loadImage($('a.photo').first().attr('href'));
+	
 	$('a.page').live('click', function(e) {
         e.preventDefault()
         var href = $(this).attr('href')
         $('#items').addClass('loading').load(href + ' #content', function() {
             $('#items').removeClass('loading')
             loadImage($('a.photo').first().attr('href'));
+        	lazyLoad();
         })
     })
     
@@ -60,16 +96,4 @@
         var href = $(this).attr('href')
 		loadImage(href);
     })
-    
-    loadImage($('a.photo').first().attr('href'));
-
-    function loadImage(src) {
-        var img = new Image();
-        $(img).load(function() {
-        	$(this).hide();
-            $('#photo').append($(img));
-           	$(this).fadeIn(500);
-        })
-        $(img).attr('src', src);
-	}
 </script>

@@ -97,3 +97,15 @@ a.photo:hover {
 .nav ul li.selected a {
     color: #bbb;
 }
+
+#miniatures {
+	top : 45px;
+	position: relative;
+	width: 800px;
+	overflow-x: scroll;
+}
+
+.lazy {
+	width: 72px;
+	height: 72px;
+}
